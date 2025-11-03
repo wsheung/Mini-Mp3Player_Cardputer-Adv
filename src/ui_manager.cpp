@@ -9,7 +9,6 @@ M5Canvas sprite(&M5Cardputer.Display);
 M5Canvas spr(&M5Cardputer.Display);
 
 bool nextTrackRequest = false;
-uint8_t brightnessStep = 64;
 uint8_t sliderPos = 0;
 int16_t textPos = 90;
 uint8_t graphSpeed = 0;
@@ -21,6 +20,7 @@ unsigned long trackStartMillis = 0;
 unsigned long playbackTime = 0; 
 
 static uint8_t volumeStep = 4;
+static uint8_t brightnessStep = 64;
 static bool inFolder = false;
 static short int selectedFolderIndex = 0;
 static short int folderConfirmIndex = 0;
@@ -331,9 +331,9 @@ void handleKeyPress(char key) {
             isStoped = false;
         }
     } else if (key == 'c') {
-        changeVolume(-4);
+        changeVolume(-volumeStep);
     } else if (key == 'v') {
-        changeVolume(4);
+        changeVolume(volumeStep);
     } else if (key == 'l') {
         M5Cardputer.Display.setBrightness(M5Cardputer.Display.getBrightness() + brightnessStep);
     } else if (key == 'n' || key == 'p' || key == 'r' || key == '\n') {

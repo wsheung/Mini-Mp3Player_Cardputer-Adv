@@ -28,7 +28,7 @@ void handlePlayback(bool playCommand, bool stopCommand, bool nextTrack = false, 
 void resetTimer();
 
 bool initES8311Codec();
-void changeVolume(uint8_t volume);
+void changeVolume(uint8_t v);
 void playTestTone(uint32_t freq_hz, uint32_t duration_ms, uint32_t sample_rate = 44100, uint16_t amplitude = 12000);
 void updateHeadphoneDetection();
 

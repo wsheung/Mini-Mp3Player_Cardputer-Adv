@@ -24,7 +24,7 @@ static bool es8311_write(uint8_t reg, uint8_t val) {
     return true;
 }
 
-void changeVolume(int8_t v) {
+void changeVolume(uint8_t v) {
     volume += v;
     if (volume > 20) volume = 20;
     else if (volume < 0) volume = 0;

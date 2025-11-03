@@ -14,7 +14,6 @@ extern M5Canvas sprite;
 extern M5Canvas spr;
 
 extern bool nextTrackRequest;
-extern uint8_t brightnessStep;
 extern uint8_t sliderPos;
 extern int16_t textPos;
 extern uint8_t graphSpeed;
