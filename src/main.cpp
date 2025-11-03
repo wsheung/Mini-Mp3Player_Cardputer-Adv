@@ -89,13 +89,6 @@ void Task_Audio(void *pvParameters) {
     const TickType_t idleDelay = pdMS_TO_TICKS(20);
 
     while (true) {
-
-        if (volumeUpdateRequest) {
-            audio.setVolume(volume);
-            volumeUpdateRequest = false;
-            Serial.printf("Task_Audio: Volume updated to %d\n", volume);
-        }
-
         if (nextTrackRequest && fileCount > 0) {
             audio.stopSong();
             trackStartMillis = millis();

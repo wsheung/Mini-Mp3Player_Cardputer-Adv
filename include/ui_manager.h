@@ -6,7 +6,6 @@
 
 enum UIState {
     UI_FOLDER_SELECT,
-    UI_FOLDER_CONFIRM,
     UI_PLAYER
 };
 
@@ -14,10 +13,8 @@ extern UIState currentUIState;
 extern M5Canvas sprite;
 extern M5Canvas spr;
 
-extern bool volumeUpdateRequest;
 extern bool nextTrackRequest;
-extern uint8_t bri;
-extern uint8_t brightness[5];
+extern uint8_t brightnessStep;
 extern uint8_t sliderPos;
 extern int16_t textPos;
 extern uint8_t graphSpeed;

@@ -8,10 +8,8 @@ UIState currentUIState = UI_FOLDER_SELECT;
 M5Canvas sprite(&M5Cardputer.Display);
 M5Canvas spr(&M5Cardputer.Display);
 
-bool volumeUpdateRequest = false;
 bool nextTrackRequest = false;
-uint8_t bri = 2;
-uint8_t brightness[5] = {60, 120, 180, 220, 255};
+uint8_t brightnessStep = 64;
 uint8_t sliderPos = 0;
 int16_t textPos = 90;
 uint8_t graphSpeed = 0;
@@ -22,6 +20,7 @@ unsigned short light;
 unsigned long trackStartMillis = 0;
 unsigned long playbackTime = 0; 
 
+static uint8_t volumeStep = 4;
 static bool inFolder = false;
 static short int selectedFolderIndex = 0;
 static short int folderConfirmIndex = 0;
@@ -29,7 +28,7 @@ static short int selectedFileIndex = 0;
 
 void initUI() {
     M5Cardputer.Display.setRotation(1);
-    M5Cardputer.Display.setBrightness(brightness[bri]);
+    M5Cardputer.Display.setBrightness(brightnessStep*2);
     sprite.createSprite(240, 135);
     spr.createSprite(86, 16);
 
@@ -84,28 +83,31 @@ void drawFolderSelect() {
     int startY = 48;
     int lineHeight = 14;
     int maxVisible = 5;
-    int startIdx = max(0, selectedFolderIndex - 2);
+
     int totalItems = folderCount + 1;
+    int startIdx = max(0, selectedFolderIndex - 2);
 
     for (int i = 0; i < maxVisible && (startIdx + i) < totalItems; i++) {
         int idx = startIdx + i;
         int y = startY + i * lineHeight;
 
         bool isConfirmButton = (idx == folderCount);
+        bool isParentButton = (!isConfirmButton && idx == 0 && currentFolder != "/");
 
         if (idx == selectedFolderIndex) {
             sprite.fillRoundRect(6, y - 1, 228, lineHeight + 2, 3,
                                  isConfirmButton ? RED : BLUE);
             sprite.setTextColor(WHITE, isConfirmButton ? RED : BLUE);
         } else {
-            sprite.setTextColor(isConfirmButton ? RED : GREEN, gray);
+            sprite.setTextColor(isConfirmButton ? RED : (isParentButton ? GREEN : GREEN), gray);
         }
 
         if (isConfirmButton) {
             sprite.drawString("[> Confirm Selection]", 12, y);
+        } else if (isParentButton) {
+            sprite.drawString("..", 12, y);
         } else {
             String displayName = availableFolders[idx];
-            displayName = "..";
             sprite.drawString(displayName.substring(0, 24), 12, y);
         }
     }
@@ -170,12 +172,12 @@ void drawPlayer() {
         }
 
         sprite.fillRoundRect(172, 82, 60, 3, 2, YELLOW);
-        sprite.fillRoundRect(155 + ((volume / 5) * 17), 80, 10, 8, 2, grays[2]);
-        sprite.fillRoundRect(157 + ((volume / 5) * 17), 82, 6, 4, 2, grays[10]);
+        sprite.fillRoundRect(155 + ((volume / volumeStep) * 17), 80, 10, 8, 2, grays[2]);
+        sprite.fillRoundRect(157 + ((volume / volumeStep) * 17), 82, 6, 4, 2, grays[10]);
 
         sprite.fillRoundRect(172, 124, 30, 3, 2, MAGENTA);
-        sprite.fillRoundRect(172 + (bri * 5), 122, 10, 8, 2, grays[2]);
-        sprite.fillRoundRect(174 + (bri * 5), 124, 6, 4, 2, grays[10]);
+        sprite.fillRoundRect(172 + (M5Cardputer.Display.getBrightness() * 30) / 255, 122, 10, 8, 2, grays[2]);
+        sprite.fillRoundRect(174 + (M5Cardputer.Display.getBrightness() * 30) / 255, 124, 6, 4, 2, grays[10]);
 
         sprite.drawRect(206, 119, 28, 12, GREEN);
         sprite.fillRect(234, 122, 3, 6, GREEN);
@@ -277,20 +279,26 @@ void handleKeyPress(char key) {
         int maxIndex = folderCount;
         if (key == ';') {
             selectedFolderIndex--;
-            if (selectedFolderIndex < 0) selectedFolderIndex = maxIndex - 1;
+            if (selectedFolderIndex < 0) selectedFolderIndex = maxIndex;
         } else if (key == '.') {
             selectedFolderIndex++;
-            if (selectedFolderIndex >= maxIndex) selectedFolderIndex = 0;
+            if (selectedFolderIndex > maxIndex) selectedFolderIndex = 0;
         } else if (key == '\n') {
             if (selectedFolderIndex == folderCount) {
-                String chosenFolder = currentFolder;
                 listAudioFiles(currentFolder);
                 currentFileIndex = 0;
                 currentUIState = UI_PLAYER;
                 isPlaying = true;
                 isStoped = false;
                 textPos = 90;
-            } else {
+            }
+            else if (selectedFolderIndex == 0 && currentFolder != "/") {
+                int lastSlash = currentFolder.lastIndexOf('/');
+                currentFolder = (lastSlash > 0) ? currentFolder.substring(0, lastSlash) : "/";
+                scanAvailableFolders(currentFolder);
+                selectedFolderIndex = 0;
+            }
+            else {
                 currentFolder = availableFolders[selectedFolderIndex];
                 scanAvailableFolders(currentFolder);
                 selectedFolderIndex = 0;
@@ -298,10 +306,7 @@ void handleKeyPress(char key) {
         } else if (key == '`' || key == '\b') {
             if (currentFolder != "/") {
                 int lastSlash = currentFolder.lastIndexOf('/');
-                if (lastSlash > 0)
-                    currentFolder = currentFolder.substring(0, lastSlash);
-                else
-                    currentFolder = "/";
+                currentFolder = (lastSlash > 0) ? currentFolder.substring(0, lastSlash) : "/";
                 scanAvailableFolders(currentFolder);
                 selectedFolderIndex = 0;
             }
@@ -325,12 +330,12 @@ void handleKeyPress(char key) {
             isPlaying = true;
             isStoped = false;
         }
+    } else if (key == 'c') {
+        changeVolume(-4);
     } else if (key == 'v') {
-        volumeUpdateRequest = true;
+        changeVolume(4);
     } else if (key == 'l') {
-        bri++;
-        if (bri == 5) bri = 0;
-        M5Cardputer.Display.setBrightness(brightness[bri]);
+        M5Cardputer.Display.setBrightness(M5Cardputer.Display.getBrightness() + brightnessStep);
     } else if (key == 'n' || key == 'p' || key == 'r' || key == '\n') {
         if (key == 'n') {
             currentFileIndex++;

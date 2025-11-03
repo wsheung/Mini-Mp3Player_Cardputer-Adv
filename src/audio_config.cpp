@@ -6,11 +6,11 @@
 #include <math.h>
 
 Audio audio;
-int volume = 10;
+uint8_t volume = 10;
 bool isPlaying = true;
 bool isStoped = false;
-int hpDetectPin = CARDPUTER_HP_DET_PIN;
-int ampEnablePin = CARDPUTER_AMP_EN_PIN;
+uint8_t hpDetectPin = CARDPUTER_HP_DET_PIN;
+uint8_t ampEnablePin = CARDPUTER_AMP_EN_PIN;
 bool lastHPState = false;
 bool codec_initialized = false;
 
@@ -22,6 +22,13 @@ static bool es8311_write(uint8_t reg, uint8_t val) {
     }
     delay(2);
     return true;
+}
+
+void changeVolume(int8_t v) {
+    volume += v;
+    if (volume > 20) volume = 20;
+    else if (volume < 0) volume = 0;
+    audio.setVolume(volume);
 }
 
 void playTestTone(uint32_t freq_hz, uint32_t duration_ms, uint32_t sample_rate, uint16_t amplitude) {
@@ -148,7 +155,7 @@ bool initES8311Codec() {
     playTestTone(440, 1500, 44100, 12000);
 
     audio.setPinout(CARDPUTER_I2S_BCLK, CARDPUTER_I2S_LRCK, CARDPUTER_I2S_DOUT);
-    audio.setVolume(volume);
+    changeVolume(volume);
     audio.setBalance(0);
     
     return true;
