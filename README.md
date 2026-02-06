@@ -1,8 +1,8 @@
 # Mini MP3 Player for Cardputer Adv
 
-This is fork from sourcels's repository: [Mini-Mp3Player_Cardputer-Adv](https://github.com/sourcels/Mini-Mp3Player_Cardputer-Adv)
+This is fork from  AleksM2137's repository: https://github.com/AleksM2137/Mini-Mp3Player_Cardputer-Adv
 
 SD-Card is required
 
 ## Changes:
-- Added display off
+- Smaller volume and brightness steps
