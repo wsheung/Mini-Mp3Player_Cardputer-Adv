@@ -15,9 +15,9 @@ constexpr int SCROLL_SPEED = 1;
 
 bool isScreenDimmed = false;
 constexpr unsigned long SCREEN_DIM_TIMEOUT = 30000;
-// constexpr uint8_t DIMMED_BRIGHTNESS = 0;
+constexpr uint8_t DIMMED_BRIGHTNESS = 0;
 unsigned long lastActivityTime = 0;
-// uint8_t savedBrightness = 128;
+uint8_t savedBrightness = 128;
 
 
 uint8_t sliderPos = 0;
@@ -38,8 +38,7 @@ static uint16_t viewStartIndex = 0;
 
 void initUI() {
     M5Cardputer.Display.setRotation(1);
-    M5Cardputer.Display.setBrightness(brightnessStep*2);
-    // savedBrightness = brightnessStep*2; 
+    M5Cardputer.Display.setBrightness(savedBrightness);
     sprite1.createSprite(240, 135);
     sprite2.createSprite(86, 16);
 
@@ -55,10 +54,9 @@ void initUI() {
 
 void resetActivityTimer() {
     lastActivityTime = millis();
-    
 
     if (isScreenDimmed) {
-        // M5Cardputer.Display.setBrightness(savedBrightness);
+        M5Cardputer.Display.setBrightness(savedBrightness);
         M5Cardputer.Display.wakeup();
         isScreenDimmed = false;
     }
@@ -69,8 +67,7 @@ void checkScreenTimeout() {
     
     unsigned long now = millis();
     if (now - lastActivityTime > SCREEN_DIM_TIMEOUT) {
-        // savedBrightness = M5Cardputer.Display.getBrightness();
-        // M5Cardputer.Display.setBrightness(DIMMED_BRIGHTNESS);
+        M5Cardputer.Display.setBrightness(DIMMED_BRIGHTNESS);
         M5Cardputer.Display.sleep();
         isScreenDimmed = true;
     }
@@ -399,13 +396,13 @@ void handleKeyPress(char key) {
         changeVolume(volumeStep);
         Serial.printf("Volume: %d\n", volume);
     } else if (key == 'k') {
-        // savedBrightness = M5Cardputer.Display.getBrightness() - brightnessStep;
-        // M5Cardputer.Display.setBrightness(savedBrightness);
-        // Serial.printf("Brightness: %d\n", savedBrightness);
+        savedBrightness = M5Cardputer.Display.getBrightness() - brightnessStep;
+        M5Cardputer.Display.setBrightness(savedBrightness);
+        Serial.printf("Brightness: %d\n", savedBrightness);
     }  else if (key == 'l') {
-        // savedBrightness = M5Cardputer.Display.getBrightness() + brightnessStep;
-        // M5Cardputer.Display.setBrightness(savedBrightness);
-        // Serial.printf("Brightness: %d\n", savedBrightness);
+        savedBrightness = M5Cardputer.Display.getBrightness() + brightnessStep;
+        M5Cardputer.Display.setBrightness(savedBrightness);
+        Serial.printf("Brightness: %d\n", savedBrightness);
     }
     if (currentUIState == UI_FOLDER_SELECT) {
         const bool hasParent = (currentFolder != "/");
