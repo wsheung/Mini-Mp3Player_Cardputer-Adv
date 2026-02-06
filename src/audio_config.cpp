@@ -26,8 +26,6 @@ static bool es8311_write(uint8_t reg, uint8_t val) {
 
 void changeVolume(int8_t v) {
     volume += v;
-    if (volume > 20) volume = 20;
-    else if (volume < 0) volume = 0;
     audio.setVolume(volume);
 }
 

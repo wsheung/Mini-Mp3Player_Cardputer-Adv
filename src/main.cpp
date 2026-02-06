@@ -55,6 +55,8 @@ void Task_TFT(void *pvParameters) {
 void Task_Audio(void *pvParameters) {
     if (!initES8311Codec()) {
         Serial.println("ERROR: Audio codec initialization failed!");
+    } else {
+        audio.setVolumeSteps(64);
     }
 
     const TickType_t playDelay = pdMS_TO_TICKS(1);
