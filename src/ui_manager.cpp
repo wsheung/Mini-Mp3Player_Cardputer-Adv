@@ -30,8 +30,8 @@ unsigned short light;
 unsigned long trackStartMillis = 0;
 unsigned long playbackTime = 0; 
 
-static uint8_t volumeStep = 4;
-static uint8_t brightnessStep = 64;
+static uint8_t volumeStep = 1;
+static uint8_t brightnessStep = 32;
 static uint8_t selectedFolderIndex = 0;
 static uint8_t selectedFileIndex = 0;
 static uint16_t viewStartIndex = 0;
