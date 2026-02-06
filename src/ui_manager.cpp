@@ -30,7 +30,7 @@ unsigned short light;
 unsigned long trackStartMillis = 0;
 unsigned long playbackTime = 0; 
 
-static uint8_t volumeStep = 1;
+static uint8_t volumeStep = 4;
 static uint8_t brightnessStep = 32;
 static uint8_t selectedFolderIndex = 0;
 static uint8_t selectedFileIndex = 0;
@@ -259,7 +259,7 @@ void drawPlayer() {
         
         sprite1.fillRoundRect(volBarX, volBarY, volBarWidth, 3, 2, YELLOW);
 
-        int volSliderX = volBarX + map(volume, 0, 21, 0, volBarWidth - volSliderWidth);
+        int volSliderX = volBarX + map(volume, 0, 64, 0, volBarWidth - volSliderWidth);
         sprite1.fillRoundRect(volSliderX, volBarY - 2, volSliderWidth, 8, 2, grays[2]);
         sprite1.fillRoundRect(volSliderX + 2, volBarY, 6, 4, 2, grays[10]);
 
